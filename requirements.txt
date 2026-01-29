@@ -1,0 +1,24 @@
+# Flask Web Framework
+Flask==3.0.0
+Flask-CORS==4.0.0
+
+# AI/ML Libraries
+torch>=2.0.0
+diffusers>=0.25.0
+transformers>=4.35.0
+accelerate>=0.25.0
+
+# Image/Video Processing
+Pillow>=10.0.0
+opencv-python>=4.8.0
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9
+
+# Utilities
+python-dotenv>=1.0.0
+numpy>=1.24.0
+tqdm>=4.66.0
+
+# API and File Handling
+Werkzeug>=3.0.0
+gunicorn>=21.2.0

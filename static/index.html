@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wan 2.0 - AI Video Generation</title>
+    <meta name="description" content="Generate stunning videos from text prompts or images using Wan 2.0 AI model">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="12" fill="url(#logo-gradient)"/>
+                    <path d="M12 20L18 14L24 20L30 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 26L18 20L24 26L30 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="logo-gradient" x1="0" y1="0" x2="40" y2="40">
+                            <stop offset="0%" stop-color="#667eea"/>
+                            <stop offset="100%" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>Wan 2.0</h1>
+            </div>
+            <p class="tagline">AI-Powered Video Generation</p>
+        </header>
+
+        <!-- Mode Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="text-to-video">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                Text to Video
+            </button>
+            <button class="tab" data-tab="image-to-video">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                Image to Video
+            </button>
+        </div>
+
+        <!-- Content Panels -->
+        <div class="content">
+            <!-- Text to Video Panel -->
+            <div id="text-to-video" class="panel active">
+                <div class="card">
+                    <h2>Create Video from Text</h2>
+                    <p class="subtitle">Describe your vision and watch it come to life</p>
+                    
+                    <form id="text-form" class="form">
+                        <div class="form-group">
+                            <label for="text-prompt">
+                                Prompt
+                                <span class="char-count" id="text-char-count">0 / 500</span>
+                            </label>
+                            <textarea 
+                                id="text-prompt" 
+                                name="prompt" 
+                                placeholder="A majestic dragon flying over a medieval castle at sunset, cinematic lighting, 4k quality..."
+                                maxlength="500"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="text-negative">Negative Prompt (Optional)</label>
+                            <textarea 
+                                id="text-negative" 
+                                name="negative_prompt" 
+                                placeholder="blurry, low quality, distorted..."
+                                maxlength="200"
+                            ></textarea>
+                        </div>
+
+                        <div class="settings-grid">
+                            <div class="form-group">
+                                <label for="text-duration">Duration (seconds)</label>
+                                <input type="number" id="text-duration" name="duration" value="5" min="1" max="10" step="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="text-fps">FPS</label>
+                                <select id="text-fps" name="fps">
+                                    <option value="24" selected>24</option>
+                                    <option value="30">30</option>
+                                    <option value="60">60</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="text-resolution">Resolution</label>
+                                <select id="text-resolution" name="resolution">
+                                    <option value="480">480p</option>
+                                    <option value="720" selected>720p (HD)</option>
+                                    <option value="1080">1080p (Full HD)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Generate Video
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Image to Video Panel -->
+            <div id="image-to-video" class="panel">
+                <div class="card">
+                    <h2>Animate Your Images</h2>
+                    <p class="subtitle">Transform static images into dynamic videos</p>
+                    
+                    <form id="image-form" class="form">
+                        <div class="upload-area" id="upload-area">
+                            <input type="file" id="image-input" name="image" accept="image/png,image/jpeg,image/jpg,image/webp" hidden>
+                            <div class="upload-content">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                <h3>Drop your image here</h3>
+                                <p>or click to browse</p>
+                                <span class="file-types">PNG, JPG, JPEG, WEBP (Max 10MB)</span>
+                            </div>
+                            <div class="preview-container" id="preview-container" style="display: none;">
+                                <img id="image-preview" src="" alt="Preview">
+                                <button type="button" class="btn-remove" id="remove-image">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="image-prompt">Prompt (Optional)</label>
+                            <textarea 
+                                id="image-prompt" 
+                                name="prompt" 
+                                placeholder="Add motion description: gentle camera zoom, smooth pan left, character walking..."
+                                maxlength="300"
+                            ></textarea>
+                        </div>
+
+                        <div class="settings-grid">
+                            <div class="form-group">
+                                <label for="image-duration">Duration (seconds)</label>
+                                <input type="number" id="image-duration" name="duration" value="5" min="1" max="10" step="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="image-fps">FPS</label>
+                                <select id="image-fps" name="fps">
+                                    <option value="24" selected>24</option>
+                                    <option value="30">30</option>
+                                    <option value="60">60</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="image-resolution">Resolution</label>
+                                <select id="image-resolution" name="resolution">
+                                    <option value="480">480p</option>
+                                    <option value="720" selected>720p (HD)</option>
+                                    <option value="1080">1080p (Full HD)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="image-submit" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                            Generate Video
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h3>Generating Your Video</h3>
+                <p id="loading-message">Processing your request...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="result-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <button class="modal-close" id="modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                
+                <h2>Your Video is Ready!</h2>
+                
+                <div class="video-container">
+                    <video id="result-video" controls autoplay loop>
+                        <source id="video-source" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <div class="modal-actions">
+                    <a id="download-link" href="#" class="btn btn-primary" download>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download Video
+                    </a>
+                    <button class="btn btn-secondary" id="create-another">Create Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
