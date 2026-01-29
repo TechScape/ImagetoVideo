@@ -60,6 +60,18 @@ def index():
     return send_from_directory('static', 'index.html')
 
 
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    """Serve CSS files"""
+    return send_from_directory('static/css', filename)
+
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    """Serve JavaScript files"""
+    return send_from_directory('static/js', filename)
+
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
