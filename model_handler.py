@@ -51,12 +51,23 @@ class Wan2ModelHandler:
         try:
             logger.info(f"Loading model: {self.model_name}")
             
-            # Load the pipeline
-            self.pipeline = DiffusionPipeline.from_pretrained(
-                self.model_name,
-                torch_dtype=torch.float16 if self.use_fp16 and self.device == "cuda" else torch.float32,
-                trust_remote_code=True
-            )
+            # Check if using lightweight alternative
+            if "text2video" in self.model_name.lower() or "modelscope" in self.model_name.lower():
+                logger.info("Loading lightweight ModelScope Text2Video model...")
+                from diffusers import DiffusionPipeline
+                
+                self.pipeline = DiffusionPipeline.from_pretrained(
+                    "damo-vilab/text-to-video-ms-1.7b",
+                    torch_dtype=torch.float32,  # Use float32 for CPU compatibility
+                    variant="fp16" if self.device == "cuda" else None
+                )
+            else:
+                # Load the standard Wan pipeline
+                self.pipeline = DiffusionPipeline.from_pretrained(
+                    self.model_name,
+                    torch_dtype=torch.float16 if self.use_fp16 and self.device == "cuda" else torch.float32,
+                    trust_remote_code=True
+                )
             
             # Move to device
             self.pipeline = self.pipeline.to(self.device)
