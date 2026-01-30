@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Wan2ModelHandler:
     """Handler for Wan 2.0 video generation model"""
     
-    def __init__(self, model_name="alibaba-pai/wan-2.0-5b", device=None, use_fp16=True):
+    def __init__(self, model_name="alibaba-pai/wan-2.0-5b", device=None, use_fp16=True, use_api=False, api_token=None):
         """
         Initialize the Wan 2.0 model
         
@@ -26,9 +26,27 @@ class Wan2ModelHandler:
             model_name: HuggingFace model identifier
             device: Device to run on (cuda/cpu/mps)
             use_fp16: Whether to use half precision
+            use_api: Whether to use API mode (Replicate)
+            api_token: API token for Replicate
         """
         self.model_name = model_name
         self.use_fp16 = use_fp16
+        self.use_api = use_api
+        
+        # Initialize API client if enabled
+        self.api_client = None
+        if use_api:
+            try:
+                from api_client import ReplicateAPIClient
+                self.api_client = ReplicateAPIClient(api_token)
+                if self.api_client.is_available():
+                    logger.info("API mode enabled - using Replicate for video generation")
+                else:
+                    logger.warning("API token not configured - falling back to local model")
+                    self.use_api = False
+            except Exception as e:
+                logger.error(f"Error initializing API client: {str(e)}")
+                self.use_api = False
         
         # Determine device
         if device is None:
@@ -41,10 +59,11 @@ class Wan2ModelHandler:
         else:
             self.device = device
             
-        logger.info(f"Initializing Wan 2.0 model on {self.device}")
+        logger.info(f"Initializing Wan 2.0 model on {self.device} (API mode: {self.use_api})")
         
         self.pipeline = None
-        self._load_model()
+        if not self.use_api:
+            self._load_model()
     
     def _load_model(self):
         """Load the Wan 2.0 model pipeline"""
@@ -116,6 +135,24 @@ class Wan2ModelHandler:
         logger.info(f"Generating text-to-video: {prompt}")
         
         try:
+            # Try API first if enabled
+            if self.use_api and self.api_client:
+                try:
+                    logger.info("Using Replicate API for generation")
+                    return self.api_client.generate_text_to_video(
+                        prompt=prompt,
+                        negative_prompt=negative_prompt,
+                        num_frames=num_frames,
+                        height=height,
+                        width=width,
+                        fps=fps,
+                        output_path=output_path
+                    )
+                except Exception as api_error:
+                    logger.error(f"API generation failed: {str(api_error)}")
+                    logger.info("Falling back to local model")
+            
+            # Try local model
             if self.pipeline is None:
                 return self._generate_mock_video(output_path, "text")
             
@@ -176,6 +213,24 @@ class Wan2ModelHandler:
             image = Image.open(image_path).convert("RGB")
             image = image.resize((width, height))
             
+            # Try API first if enabled
+            if self.use_api and self.api_client:
+                try:
+                    logger.info("Using Replicate API for generation")
+                    return self.api_client.generate_image_to_video(
+                        image_path=image_path,
+                        prompt=prompt,
+                        num_frames=num_frames,
+                        height=height,
+                        width=width,
+                        fps=fps,
+                        output_path=output_path
+                    )
+                except Exception as api_error:
+                    logger.error(f"API generation failed: {str(api_error)}")
+                    logger.info("Falling back to local model")
+            
+            # Try local model
             if self.pipeline is None:
                 return self._generate_mock_video(output_path, "image", image)
             

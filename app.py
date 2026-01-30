@@ -42,10 +42,15 @@ Path(app.config['OUTPUT_FOLDER']).joinpath('.gitkeep').touch()
 
 # Initialize model handler
 logger.info("Initializing Wan 2.0 model...")
+use_api_mode = os.getenv('USE_API_MODE', 'False').lower() == 'true'
+replicate_token = os.getenv('REPLICATE_API_TOKEN', '')
+
 model_handler = Wan2ModelHandler(
     model_name=os.getenv('MODEL_NAME', 'alibaba-pai/wan-2.0-5b'),
     device=os.getenv('DEVICE', None),
-    use_fp16=os.getenv('USE_FP16', 'True').lower() == 'true'
+    use_fp16=os.getenv('USE_FP16', 'True').lower() == 'true',
+    use_api=use_api_mode,
+    api_token=replicate_token if replicate_token else None
 )
 
 
@@ -77,6 +82,8 @@ def health_check():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
+        'api_mode': model_handler.use_api,
+        'api_available': model_handler.api_client.is_available() if model_handler.api_client else False,
         'model_loaded': model_handler.pipeline is not None,
         'device': model_handler.device
     })
